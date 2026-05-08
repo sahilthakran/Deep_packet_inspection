@@ -6,4 +6,4 @@ COPY . .
 
 RUN javac */*.java
 
-CMD ["java", "main.MainMultiThreaded"]
+CMD ["java", "SnakeGame"]
