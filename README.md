@@ -1,87 +1,130 @@
-DPI Engine – Deep Packet Inspection System (Java)
-1. Project Overview
-This project is a Deep Packet Inspection (DPI) Engine built using Java.
-The system reads network packets from a PCAP file, extracts useful information from packets, identifies applications/websites using SNI, and blocks traffic based on rules.
+# DPI Engine – Deep Packet Inspection System (Java)
 
-The project mainly focuses on:
-Packet Parsing
-TCP/IP Networking
-TLS SNI Extraction
-Application Detection
-Packet Filtering
-Flow Tracking
+## Project Overview
 
-2. What is Deep Packet Inspection (DPI)?
-Deep Packet Inspection means:
-Instead of only checking source and destination IP addresses, we inspect the actual content inside packets.
+This project is a Java-based Deep Packet Inspection (DPI) Engine developed to analyze, inspect, classify, and filter real network traffic from PCAP files using low-level packet parsing techniques.
 
-Normal Firewall:
-Checks:
--> Source IP
--> Destination IP
--> Port
+The system reads raw packets, extracts protocol information from Ethernet, IPv4, TCP/UDP headers, identifies websites and applications using TLS SNI extraction, tracks complete network flows using Five-Tuple architecture, and applies rule-based packet filtering and blocking.
 
-DPI Engine:
--> Checks:
--> IP
--> Port
--> Protocol
--> Payload Data
--> TLS SNI
--> HTTP Host
--> Application Type
+The project simulates how modern firewalls, ISPs, enterprise monitoring systems, and cybersecurity tools inspect encrypted HTTPS traffic.
 
+---
 
-3. Real World Use Cases
-ISPs
--> Block websites
--> Throttle YouTube/Netflix
-Companies
--> Block social media
--> Monitor traffic
-Cyber Security
--> Detect malware
--> Detect suspicious traffic
-Parental Control
--> Block adult websites
- 
+# Main Features
 
-1. Technologies Used
-Technology	              Purpose
-Java		              Main Language
-ByteBuffer		          Packet Parsing
-PCAP Files	              Network Traffic
-TCP/IP	              	  Networking
-TLS SNI	              	  Website Detection
-Multithreading	          Performance
+- Low-Level Packet Parsing
+- Ethernet Header Parsing
+- IPv4 Header Parsing
+- TCP/UDP Parsing
+- TLS SNI Extraction
+- HTTPS Website Detection
+- Application Identification
+- Rule-Based Packet Filtering
+- IP / Domain / Application Blocking
+- Five-Tuple Flow Tracking
+- Multithreaded Packet Processing
+- Producer Consumer Architecture
+- Thread-Safe Queues
+- High Performance Packet Pipeline
 
+---
 
+# What is Deep Packet Inspection (DPI)?
 
+Deep Packet Inspection (DPI) is a network traffic analysis technique where the actual contents inside packets are inspected instead of only checking source and destination addresses.
 
-5. Project Flow
+Traditional firewalls mainly inspect:
+
+- Source IP
+- Destination IP
+- Port Numbers
+
+DPI systems inspect:
+
+- IP Address
+- Port Number
+- Protocol Type
+- TCP/UDP Headers
+- Payload Data
+- TLS Handshake
+- HTTP Host
+- TLS SNI
+- Application Signatures
+
+This allows the system to identify websites, applications, and traffic patterns even when traffic is encrypted using HTTPS.
+
+---
+
+# Real World Use Cases
+
+## Internet Service Providers (ISPs)
+- Website blocking
+- Traffic monitoring
+- Bandwidth throttling
+- Application detection
+
+## Enterprise Networks
+- Blocking social media
+- Monitoring employee traffic
+- Restricting applications
+
+## Cybersecurity Systems
+- Malware detection
+- Suspicious traffic analysis
+- Intrusion detection
+
+## Parental Control Systems
+- Blocking harmful websites
+- Filtering internet traffic
+
+---
+
+# Technologies Used
+
+| Technology | Purpose |
+|------------------------|---------------------------|
+| Java                   | Main Development Language |
+| ByteBuffer             | Low-Level Packet Parsing |
+| PCAP Files             | Reading Network Traffic |
+| TCP/IP                 | Network Communication |
+| TLS SNI                | HTTPS Domain Detection |
+| Multithreading         | Parallel Packet Processing |
+| HashMap                | Flow Tracking |
+| Producer Consumer Model| Thread Communication |
+
+---
+
+# Project Architecture
+
+```text
 PCAP File
-    ↓
+   ↓
 Read Raw Packet
-    ↓
+   ↓
 Parse Ethernet Header
-    ↓
-Parse IP Header
-    ↓
+   ↓
+Parse IPv4 Header
+   ↓
 Parse TCP/UDP Header
-    ↓
+   ↓
 Extract Payload
-    ↓
-Extract SNI / HTTP Host
-    ↓
+   ↓
+Extract TLS SNI / HTTP Host
+   ↓
 Identify Application
-    ↓
+   ↓
+Track Network Flow
+   ↓
 Apply Blocking Rules
-    ↓
+   ↓
 Forward or Drop Packet
+```
 
+---
 
+# Project Structure
 
-6. Project Structure
+```text
 DEEP_PACKET_INSPECTION/
 │
 ├── engine/
@@ -95,12 +138,12 @@ DEEP_PACKET_INSPECTION/
 │   └── MainMultiThreaded.java
 │
 ├── model/
-│   ├── AppType.java        
-│   ├── ConnectionState.java      
-│   ├── FiveTuple.java     
-│   ├── Flow.java             
-│   ├── ParsedPacket.java
-│   
+│   ├── AppType.java
+│   ├── ConnectionState.java
+│   ├── FiveTuple.java
+│   ├── Flow.java
+│   ├── Packet.java
+│   └── ParsedPacket.java
 │
 ├── parser/
 │   └── PacketParser.java
@@ -125,316 +168,511 @@ DEEP_PACKET_INSPECTION/
 ├── test_dpi.pcap
 ├── run.sh
 └── README.md
+```
 
-7. Networking Basics
-Network Layers
-Application Layer → HTTP, HTTPS
-Transport Layer   → TCP, UDP
-Network Layer     → IP
-Data Link Layer   → Ethernet
+---
 
+# Networking Basics
 
-8. Packet Structure
-Every packet contains multiple headers.
+## Network Layers
+
+| Layer             | Protocols |
+|-------------------|-----------|
+| Application Layer | HTTP, HTTPS |
+| Transport Layer   | TCP, UDP |
+| Network Layer     | IPv4 |
+| Data Link Layer   | Ethernet |
+
+---
+
+# Packet Structure
+
+Every network packet contains multiple protocol headers.
+
+```text
 ┌─────────────────────┐
 │ Ethernet Header     │
 ├─────────────────────┤
-│ IP Header           │
+│ IPv4 Header         │
 ├─────────────────────┤
-│ TCP/UDP Header      │
+│ TCP / UDP Header    │
 ├─────────────────────┤
 │ Payload Data        │
 └─────────────────────┘
+```
 
-9. Ethernet Header
-Size: 14 Bytes
-Contains:
+---
 
--> Source MAC
--> Destination MAC
--> EtherType
+# Ethernet Header
 
-Important EtherTypes:
-EtherType	Meaning
-0x0800	    IPv4
-0x86DD		IPv6
+## Size
+14 Bytes
 
-10. IP Header
-Contains:
-Field	              Purpose
+## Contains
+- Source MAC Address
+- Destination MAC Address
+- EtherType
 
-Source IP   	      Sender
-Destination IP 	      Receiver
-Protocol	          TCP/UDP
-TTL                   Packet lifetime
+## EtherType Values
 
-Protocol Numbers:
+| EtherType | Meaning |
+|-----------|---------|
+| 0x0800    | IPv4 |
+| 0x86DD    | IPv6 |
 
-Protocol	Number
-TCP	          6
-UDP	          17
+---
 
-11. TCP Header
-Contains:
-Field	            Purpose
-Source Port      	Sender App
-Destination Port	Receiver Service
-Sequence Number	    Packet Order
-Flags	            SYN, ACK, FIN
+# IPv4 Header
 
-Common Ports:
-Port	      Service
-80	            HTTP
-443            	HTTPS
-53	            DNS
+The IPv4 header contains routing and protocol information.
 
-12. Five Tuple
-A network connection is identified using:
+## Important Fields
 
-Source IP
-Destination IP
-Source Port
-Destination Port
-Protocol
+| Field          | Purpose |
+|----------------|---------|
+| Source IP      | Sender Address |
+| Destination IP | Receiver Address |
+| Protocol       | TCP / UDP |
+| TTL            | Packet Lifetime |
+| Header Length  | IP Header Size |
 
-Example:
+---
 
-192.168.1.10
-→ 142.250.183.78
+# Protocol Numbers
+
+| Protocol | Number |
+|----------|--------|
+| TCP      | 6 |
+| UDP      | 17 |
+
+---
+
+# TCP Header
+
+## Important Fields
+
+| Field | Purpose |
+|------|---------|
+| Source Port | Sender Application |
+| Destination Port | Receiver Service |
+| Sequence Number | Packet Ordering |
+| ACK Number | Acknowledgement |
+| Flags | SYN, ACK, FIN |
+
+---
+
+# Common Ports
+
+| Port | Service |
+|------|----------|
+| 80 | HTTP |
+| 443 | HTTPS |
+| 53 | DNS |
+
+---
+
+# Five Tuple Architecture
+
+Every network connection is uniquely identified using five values:
+
+- Source IP
+- Destination IP
+- Source Port
+- Destination Port
+- Protocol
+
+## Example
+
+```text
+192.168.1.10 → 142.250.183.78
 54321 → 443
 TCP
+```
 
-All packets with same 5 values belong to same connection.
+All packets with the same five values belong to the same network flow.
 
-13. What is SNI?
-SNI = Server Name Indication
-When browser opens HTTPS website:
+---
+
+# Why Flow Tracking is Important?
+
+The first few packets of a connection usually do not contain enough information to identify the application.
+
+The DPI engine tracks all packets belonging to the same flow.
+
+Once the TLS Client Hello packet is received and the SNI is extracted:
+
+- The flow gets classified
+- Blocking rules are applied
+- All future packets of the same flow are controlled
+
+---
+
+# What is TLS SNI?
+
+SNI stands for Server Name Indication.
+
+When a browser opens an HTTPS website:
+
+```text
 https://www.youtube.com
+```
 
-Browser sends domain name inside TLS Client Hello.
-Even though HTTPS is encrypted,
-SNI is visible.
-Example:
+The browser sends the domain name during the TLS Client Hello handshake.
+
+Even though HTTPS traffic is encrypted, the SNI remains visible.
+
+## Example
+
+```text
 SNI = www.youtube.com
-This helps DPI identify websites.
+```
 
-14. PacketParser.java Explanation
-This is the core file of the project.
-Purpose:
--> Parse raw packet bytes
--> Extract networking information
+This allows DPI systems to identify HTTPS websites without decrypting traffic.
 
-15. Packet Parsing Flow
+---
+
+# PacketParser.java Explanation
+
+`PacketParser.java` is the core component of the project.
+
+Its main responsibility is parsing raw packet bytes and extracting networking information.
+
+---
+
+# Packet Parsing Process
+
+## Step 1 – Convert Byte Array into Buffer
+
+```java
 ByteBuffer buffer = ByteBuffer.wrap(data);
+```
 
-Converts byte array into readable buffer.
+This converts the raw packet bytes into a readable buffer structure.
 
-16. Ethernet Header Parsing
-code --
-int etherType =
-((data[12] & 0xFF) << 8) |
-(data[13] & 0xFF);
+---
 
-Checks packet type.
-If not IPv4:
+# Ethernet Header Parsing
 
+```java
+int etherType = ((data[12] & 0xFF) << 8) | (data[13] & 0xFF);
+```
+
+This extracts the EtherType field.
+
+If the packet is not IPv4:
+
+```java
 if (etherType != 0x0800) {
     return null;
 }
+```
 
-17.  IP Header Parsing
+The packet is ignored.
+
+---
+
+# IPv4 Header Parsing
+
+```java
 int versionIhl = buffer.get() & 0xFF;
+```
 
-Extracts:
--> IP Version
--> Header Length
+This extracts:
 
-Header length:
+- IP Version
+- Header Length
+
+## Calculate Header Length
+
+```java
 int ihl = (versionIhl & 0x0F) * 4;
+```
 
-18. Protocol Extraction
+---
+
+# Protocol Extraction
+
+```java
 buffer.position(14 + 9);
 int protocol = buffer.get() & 0xFF;
+```
 
-Reads:
--> TCP
--> UDP
+Used to identify:
 
-19. Source and Destination IP
+- TCP
+- UDP
+
+---
+
+# Source and Destination IP Extraction
+
+```java
 buffer.position(14 + 12);
 
 String srcIp = readIP(buffer);
 String destIp = readIP(buffer);
+```
 
-Example:
+## Example
 
+```text
 192.168.1.10
 142.250.183.78
+```
 
-20. Port Extraction
+---
+
+# Port Extraction
+
+```java
 int srcPort = buffer.getShort() & 0xFFFF;
 int destPort = buffer.getShort() & 0xFFFF;
+```
 
-Example:
+## Example
+
+```text
 54321
 443
+```
 
-21. TCP Payload Extraction
- 
-int dataOffset =
-((data[transportStart + 12] >> 4) & 0xF) * 4;
+---
 
-Finds TCP header size.
-Payload starts after TCP header.
+# TCP Payload Extraction
 
-22. UDP Payload Extraction
-UDP header size always:
+```java
+int dataOffset = ((data[transportStart + 12] >> 4) & 0xF) * 4;
+```
+
+This calculates the TCP header size.
+
+Payload begins after the TCP header.
+
+---
+
+# UDP Payload Extraction
+
+UDP header size is fixed:
+
+```text
 8 bytes
-So:
+```
+
+```java
 payloadStart += 8;
+```
 
-23. readIP() Method
+---
+
+# readIP() Method
+
+```java
 private static String readIP(ByteBuffer buffer)
+```
 
-Converts bytes into IP address.
-Example:
+This converts raw bytes into a readable IP address.
+
+## Example
+
+```text
 C0 A8 01 01
 ↓
 192.168.1.1
+```
 
-24. SNI Extraction Logic
+---
 
-Steps:
-Step 1
-Check TLS packet
+# TLS SNI Extraction Logic
+
+The DPI engine inspects TLS Client Hello packets.
+
+## Steps
+
+### Step 1
+Verify TLS Handshake Packet
+
+```text
 0x16 = Handshake
+```
 
-Step 2
-Check Client Hello
+### Step 2
+Verify Client Hello
+
+```text
 0x01 = Client Hello
+```
 
-Step 3
-Navigate to Extensions
+### Step 3
+Navigate to TLS Extensions
 
-Step 4
+### Step 4
 Find SNI Extension
+
+```text
 0x0000
+```
 
-Step 5
-Extract Domain
+### Step 5
+Extract Domain Name
+
+```text
 www.youtube.com
+```
 
-25. Application Detection
-Example:
+---
+
+# Application Detection
+
+The extracted SNI is mapped to applications.
+
+## Example
+
+```java
 if(sni.contains("youtube"))
+```
+
 Then:
+
+```text
 Application = YouTube
+```
 
-26. Blocking Rules
-Rules can block:
+---
 
-Type		Example
-IP			192.168.1.10
-Domain		youtube.com
-App			YouTube
+# Blocking Rules
 
-27. Blocking Flow
+The system supports multiple blocking mechanisms.
 
+| Type                 | Example |
+|----------------------|---------|
+| IP Blocking          | 192.168.1.10 |
+| Domain Blocking      | youtube.com |
+| Application Blocking | YouTube |
+
+---
+
+# Packet Filtering Flow
+
+```text
 Packet Arrives
-    ↓
+      ↓
 Parse Packet
-    ↓
+      ↓
 Extract SNI
-    ↓
+      ↓
+Identify Application
+      ↓
 Check Rules
-    ↓
+      ↓
 Blocked?
-   / \
- YES  NO
- ↓     ↓
-DROP  FORWARD
+   /      \
+ YES      NO
+ ↓         ↓
+DROP    FORWARD
+```
 
-28. Multithreading Architecture
-Project uses:
--> Producer Consumer Model
--> Thread Safe Queues
+---
 
-29. Threads Used
-Thread     	    	Work
-Reader Thread	    Reads PCAP
-LB Thread	    	Load Balancing
-FP Thread	    	Packet Processing
-Writer Thread	    Output Writing
+# Multithreading Architecture
 
-30. Why Multithreading?
-Benefits:
--> Faster processing
--> Better CPU usage
--> Large traffic handling
--> Parallel packet inspection
+The project implements multithreaded packet processing for high performance.
 
-31. Hash Based Load Balancing
+## Used Concepts
+- Producer Consumer Model
+- Thread Pools
+- Thread Safe Queues
+- Parallel Processing
 
+---
+
+# Threads Used
+
+| Thread | Responsibility |
+|--------|----------------|
+| Reader Thread | Reads packets from PCAP |
+| Load Balancer Thread | Distributes traffic |
+| Fast Path Thread | Processes packets |
+| Writer Thread | Writes output |
+
+---
+
+# Hash Based Load Balancing
+
+```java
 hash(fiveTuple) % totalThreads
-Ensures:
--> Same flow always goes to same thread.
--> Very important for flow tracking.
+```
 
-32. Flow Tracking
-Flow means:
-All packets belonging to same connection.
-Example:
-Client ↔ YouTube Server
-Sored using:
+This ensures:
 
-HashMap<FiveTuple, Flow>
+- Same flow always goes to same thread
+- Proper flow tracking
+- Consistent packet processing
 
-33. Why Flow Tracking Important?
-Because:
-First few packets may not contain SNI.
+---
 
-Once SNI detected:
-All future packets of same flow are blocked.
+# Example Flow Processing
 
-34. Example Flow
+```text
 Packet 1 → SYN
 Packet 2 → SYN ACK
 Packet 3 → ACK
 Packet 4 → TLS Client Hello
-              ↓
-        SNI = youtube
-              ↓
-        Mark Flow Blocked
-              ↓
-All next packets DROP
+           ↓
+     Extract SNI
+           ↓
+      youtube.com
+           ↓
+   Mark Flow Blocked
+           ↓
+ All Future Packets DROP
+```
 
-35. Error Handling
+---
 
-Project handles:
--> Invalid packets
--> Short packets
--> Unsupported protocols
--> Corrupted data
-Example:
+# Error Handling
+
+The system handles:
+
+- Invalid Packets
+- Short Packets
+- Unsupported Protocols
+- Corrupted Data
+- Null Buffers
+
+## Example
+
+```java
 if(data == null || data.length < 34)
+```
 
-36. Performance Optimizations
+---
 
-Used:
--> ByteBuffer
--> Minimal object creation
--> Thread pools
--> Hash based distribution
+# Performance Optimizations
 
-SUMMARY
+The project uses several optimizations:
 
-This DPI engine demonstrates:
+- ByteBuffer for efficient parsing
+- Minimal object creation
+- Hash based thread distribution
+- Producer Consumer queues
+- Thread pooling
+- Parallel packet processing
 
-1.Network Protocol Parsing - Understanding packet structure
-2.Deep Packet Inspection - Looking inside encrypted connections
-3.Flow Tracking - Managing stateful connections
-4.Multi-threaded Architecture - Scaling with thread pools
-5.Producer-Consumer Pattern - Thread-safe queues
+---
 
-The key insight is that even HTTPS traffic leaks the destination domain in the TLS handshake, allowing network operators to identify and control application usage.
+# Summary
 
+This project demonstrates:
+
+1. Network Protocol Parsing  
+2. Deep Packet Inspection  
+3. TLS SNI Extraction  
+4. HTTPS Website Detection  
+5. Five Tuple Flow Tracking  
+6. Rule-Based Packet Filtering  
+7. Producer Consumer Architecture  
+8. Multithreaded System Design  
+9. Thread-Safe Queue Implementation  
+10. High Performance Packet Processing  
+
+The core idea behind this project is that even encrypted HTTPS traffic exposes the destination domain during the TLS handshake using SNI, allowing the DPI engine to classify, monitor, and control application traffic efficiently.
